@@ -74,4 +74,16 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+	config.vm.box = "debian/bookworm64"
+	config.vm.network "forwarded_port", guest: 5000, host: 5000
+	config.vm.provision "file", source: "hello.py", destination: "~/hello.py"
+	config.vm.provision "shell", inline: <<-SHELL
+		sudo apt update
+		sudo apt install -y git nano vim python-is-python3
+		sudo apt install -y python3-venv python3-pip
+		python -m venv flask_venv
+		source flask_venv/bin/activate
+		pip install Flask
+		flask --app hello run --host=0.0.0.0
+	SHELL
 end
